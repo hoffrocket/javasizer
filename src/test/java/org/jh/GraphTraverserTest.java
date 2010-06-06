@@ -2,6 +2,7 @@ package org.jh;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 
@@ -12,8 +13,9 @@ public class GraphTraverserTest {
 	static class SimpleVisitor implements ObjectVisitor{
 		int count = 0;
 
-		public void visit(Object obj) {
+		public boolean visit(ClassInfo info, Object obj) {
 			count += 1;
+			return true;
 		}
 	}
 	
@@ -38,6 +40,18 @@ public class GraphTraverserTest {
 	
 	static class MyClass {
 		MyClass next;
+	}
+	
+	static class Parent {
+		Object o = new Object();
+	}
+	static class Child extends Parent {
+		Object o = new Object();
+	}
+	
+	@Test 
+	public void findsAllFieldsInHierarchy() {
+		assertEquals(3, visit(new Child()));
 	}
 	
 	@Test

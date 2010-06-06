@@ -4,5 +4,5 @@
 package org.jh;
 
 interface ObjectVisitor {
-	void visit(Object obj);
+	boolean visit(ClassInfo info, Object obj);
 }

@@ -35,23 +35,24 @@ public class GraphTraverser {
 		while (!stack.empty()) {
 			Object obj = stack.pop();
 			ClassInfo info = getClassInfo(obj);
-			visitor.visit(obj);
-			if (info.isArray){
-				if (!info.isPrimitive) {
-					int length = Array.getLength(obj);
-					for (int i = 0; i < length; i++){
-						Object child = Array.get(obj, i);
-						if (shouldFollow(child)) {
-							stack.put(child);
+			if (visitor.visit(info, obj)) {
+				if (info.isArray){
+					if (!info.isPrimitive) {
+						int length = Array.getLength(obj);
+						for (int i = 0; i < length; i++){
+							Object child = Array.get(obj, i);
+							if (shouldFollow(child)) {
+								stack.put(child);
+							}
 						}
 					}
-				}
-			} else {
-				for (FieldInfo f : info.fields) {
-					if (!f.isPrimitive){
-						Object child = f.get(obj);
-						if (shouldFollow(child)) {
-							stack.put(child);
+				} else {
+					for (FieldInfo f : info.fields) {
+						if (!f.isPrimitive){
+							Object child = f.get(obj);
+							if (shouldFollow(child)) {
+								stack.put(child);
+							}
 						}
 					}
 				}

@@ -19,15 +19,20 @@ class ClassInfo {
 		fields = getFields(clazz);
 	}
 	
-	private static List<FieldInfo> getFields(Class<?> clazz) {
+	public static List<FieldInfo> getFields(Class<?> clazz) {
+		List<FieldInfo> fields = new ArrayList<FieldInfo>();
+		getFields(clazz, fields);
+		return Collections.unmodifiableList(fields);
+	}
+	
+	private static void getFields(Class<?> clazz, List<FieldInfo> fieldAcc) {
 
 		Field[] declaredFields = clazz.getDeclaredFields();
-		List<FieldInfo> fields = new ArrayList<FieldInfo>(declaredFields.length);
 		for (Field f : declaredFields) {
 			if (!Modifier.isStatic(f.getModifiers()))
-				fields.add(new FieldInfo(f));
+				fieldAcc.add(new FieldInfo(f));
 		}
-
-		return Collections.unmodifiableList(fields);
+		if (clazz.getSuperclass() != null)
+			getFields(clazz.getSuperclass(), fieldAcc);
 	}
 }
