@@ -71,6 +71,7 @@
 								<configuration>
 									<executable>java</executable>
 									<arguments>
+										<argument>-server</argument>
 										<argument>-classpath</argument>
 										<classpath />
 										<argument>-javaagent:${basedir}/target/sizer-jar-with-dependencies.jar</argument>
