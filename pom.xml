@@ -1,11 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>java-sizer</groupId>
-	<artifactId>java-sizer</artifactId>
+	<groupId>javasizer</groupId>
+	<artifactId>javasizer</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jaJar>${basedir}/target/${artifactId}-jar-with-dependencies.jar</jaJar>
 	</properties>
 	<build>
 		<plugins>
@@ -17,7 +18,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<argLine>-javaagent:${basedir}/target/sizer-jar-with-dependencies.jar</argLine>
+					<argLine>-javaagent:${jaJar}</argLine>
 					<workingDirectory>${basedir}/target</workingDirectory>
 				</configuration>
 			</plugin>
@@ -39,7 +40,7 @@
 						</goals>
 						<phase>compile</phase>
 						<configuration>
-							<finalName>sizer</finalName>
+							<finalName>${artifactId}</finalName>
 							<descriptorRefs>
 								<descriptorRef>jar-with-dependencies</descriptorRef>
 							</descriptorRefs>
@@ -74,7 +75,7 @@
 										<argument>-server</argument>
 										<argument>-classpath</argument>
 										<classpath />
-										<argument>-javaagent:${basedir}/target/sizer-jar-with-dependencies.jar</argument>
+										<argument>-javaagent:${jaJar}</argument>
 										<argument>org.jh.Benchmark</argument>
 									</arguments>
 								</configuration>
