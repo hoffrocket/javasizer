@@ -1,14 +1,12 @@
 Use this library to estimate the size of a java object graph.  The library will traverse the graph using reflection and use JVM instrumentation to estimate the size of the Objects in your JVM.
 
-This library must be added as a javaagent to your JVM as it relies on the java.lang.instrument.Instrumentation class.
-
 build:
 	mvn compile
 	you want: target/sizer-jar-with-dependencies.jar
 
 usage:
-	java -javaagent:pathto.jar -classpath pathto.jar
+	add jar to your classpath
 	
-in your code:
+in your code, do this to get a deepSize in bytes of a java object:
 	org.jh.Sizer.sizeof(object)
 	
