@@ -104,7 +104,7 @@ public class GraphTraverser {
 			int index = hash(o) % objects.length;
 			int offset = 1;
 		
-			while (objects[index] != null && !(objects[index].equals(o))) {
+			while (objects[index] != null && !(objects[index] == o)) {
 				index = ((index + offset) & 0x7FFFFFFF) % objects.length;
 				offset = offset * 2 + 1;
 		
