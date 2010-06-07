@@ -52,13 +52,11 @@ public class GraphTraverser {
 			ClassInfo info = getClassInfo(obj);
 			if (visitor.visit(info, obj)) {
 				if (info.isArray){
-					if (!info.isPrimitive) {
-						int length = Array.getLength(obj);
-						for (int i = 0; i < length; i++){
-							Object child = Array.get(obj, i);
-							if (shouldFollow(child)) {
-								stack.put(child);
-							}
+					int length = Array.getLength(obj);
+					for (int i = 0; i < length; i++){
+						Object child = Array.get(obj, i);
+						if (shouldFollow(child)) {
+							stack.put(child);
 						}
 					}
 				} else {
