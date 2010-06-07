@@ -1,12 +1,45 @@
-Use this library to estimate the size of a java object graph.  The library will traverse the graph using reflection and use JVM instrumentation to estimate the size of the Objects in your JVM.
+h2. Sizer.sizeof
 
-build:
-	mvn compile
-	you want: target/sizer-jar-with-dependencies.jar
+h3. What is this?
 
-usage:
-	add jar to your classpath
-	
-in your code, do this to get a deepSize in bytes of a java object:
-	org.jh.Sizer.sizeof(object)
+A tool to measure memory usage of java objects at runtime by traversing the object graph and adding up the bytes for fields and objects.
+
+h3. Why would anyone want to use this?
+
+* Investigate a heap usage problems.  Profilers are good for looking at heap wide histograms and finding allocation hotspots, but can't easily drill down to specific objects.   Also, taking a heap dump usually requires halting execution.
+
+* Planning. 
+** e.g. what's the memory overhead of caching X?
+
+* Curiosity?
+
+h3. Why another java object graph sizer?
+
+I wanted a tool that met the following criteria:
+
+* accuracy
+* performance
+* clear licensing (Apache License, 2.0)
+* stability
+* hosted in a public repo
+* no dependencies
+
+h3.  How to add to your project
+
+You can either build from scratch using mvn:
+
+# @git clone git://github.com/hoffrocket/javasizer.git@
+# @mvn compile@
+# add @target/javasizer-jar-with-dependencies.jar@ to your classpath
+
+*OR*
+
+Grab the latest jar from here: "http://github.com/hoffrocket/javasizer/downloads":http://github.com/hoffrocket/javasizer/downloads and add to your classpath
+
+h3. How to use
+
+@org.jh.Sizer.sizeof(root)@  will return the bytes used by the object graph.
+
+_Note: this probably requires Java 1.5 or higher_
+
 	
