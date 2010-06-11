@@ -34,10 +34,10 @@ public class Benchmark {
 	public static void main(String[] args) {
 		int count = 1000;
 		List<Object> toMeasure = new ArrayList<Object>();
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 10000; i++) {
 			toMeasure.add(new TestObject());
 		}
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 50; i++) {
 			time(new Sizer.InstrumentationSizeVisitor(), toMeasure, count);
 			time(new Sizer.ReflectionSizeVisitor(), toMeasure, count);
 		}

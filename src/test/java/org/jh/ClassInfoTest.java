@@ -27,6 +27,6 @@ public class ClassInfoTest {
 
 	@Test
 	public void getsAllFieldsInHierarchyForArrayList(){
-		assertEquals(3, ClassInfo.getFields(ArrayList.class).size());
+		assertEquals(3, ClassInfo.getFields(ArrayList.class).length);
 	}
 }

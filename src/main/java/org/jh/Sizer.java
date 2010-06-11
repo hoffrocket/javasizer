@@ -18,6 +18,8 @@ package org.jh;
 
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Array;
+import java.util.HashMap;
+import java.util.Map;
 
 
 
@@ -55,7 +57,23 @@ public class Sizer {
 		}
 	}
 	
-	public static class ReflectionSizeVisitor implements SizeVisitor {
+	static abstract class CachingSizeVisitor implements SizeVisitor {
+		private final Map<Class<?>, Long> sizeCache = new HashMap<Class<?>, Long>();
+		
+		abstract long calculateSize(Object obj, ClassInfo info);
+		
+		long shallowSize(Object obj, ClassInfo info){
+			Class<?> clazz = obj.getClass();
+			Long size = sizeCache.get(clazz);
+			if (size == null) {
+				size = calculateSize(clazz, info);
+				sizeCache.put(clazz, size);
+			}
+			return size;
+		}
+	}
+	
+	public static class ReflectionSizeVisitor extends CachingSizeVisitor {
 		static int REFERENCE = refSize();
 		static int OBJECT_OVEREHAD = REFERENCE * 2;
 		static int ARRAY = REFERENCE;
@@ -68,7 +86,9 @@ public class Sizer {
 		static int FLOAT = 4;
 		static int DOUBLE = 8;
 		
-		long size = 0;
+		private long size = 0;
+		
+		
 		public long getSize() {
 			return size;
 		}
@@ -93,19 +113,32 @@ public class Sizer {
 			} else return REFERENCE;
 		}
 		
+		/**
+		 * align to 8 byte boundaries.  Not sure if this is correct behavior on all JVMs
+		 * @param size
+		 * @return
+		 */
+		private long align(long size){
+			long rem = size % 8;
+			return size + ((rem == 0) ? 0 : 8 - rem);
+		}
+		
 		public boolean visit(ClassInfo info, Object obj) {
-			long tSize = OBJECT_OVEREHAD;
 			if (info.isArray) {
-				tSize += ARRAY + Array.getLength(obj)*sizeOfType(obj.getClass().getComponentType());
+				size += align(OBJECT_OVEREHAD + ARRAY + Array.getLength(obj)*sizeOfType(obj.getClass().getComponentType()));
 			} else {
-				for (FieldInfo f : info.fields){
-					tSize += sizeOfType(f.field.getType());
-				}
+				size += shallowSize(obj, info);
 			}
-			//align to 8 byte boundaries.  Not sure if this is correct behavior on all JVMs
-			long rem = tSize % 8;
-			size += tSize + ((rem == 0) ? 0 : 8 - rem);
 			return true;
+		}
+
+		@Override
+		long calculateSize(Object obj, ClassInfo info) {
+			long tSize = OBJECT_OVEREHAD;
+			for (FieldInfo f : info.fields) {
+				tSize += sizeOfType(f.field.getType());
+			}
+			return align(tSize);
 		}
 		
 	}
