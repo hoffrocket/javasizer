@@ -22,11 +22,10 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
-
 public class ClassInfoTest {
 
-	@Test
-	public void getsAllFieldsInHierarchyForArrayList(){
-		assertEquals(3, ClassInfo.getFields(ArrayList.class).length);
-	}
+  @Test
+  public void getsAllFieldsInHierarchyForArrayList() {
+    assertEquals(3, ClassInfo.getFields(ArrayList.class).length);
+  }
 }

@@ -22,29 +22,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 class ClassInfo {
-	final boolean isArray;
-	final boolean isPrimitive;
-	final FieldInfo[] fields;
-	public ClassInfo(Class<?> clazz) {
-		isArray = clazz.isArray();
-		isPrimitive = clazz.isPrimitive() || (isArray && clazz.getComponentType().isPrimitive());
-		fields = getFields(clazz);
-	}
-	
-	public static FieldInfo[] getFields(Class<?> clazz) {
-		List<FieldInfo> fields = new ArrayList<FieldInfo>();
-		getFields(clazz, fields);
-		return fields.toArray(new FieldInfo[fields.size()]);
-	}
-	
-	private static void getFields(Class<?> clazz, List<FieldInfo> fieldAcc) {
+  final boolean isArray;
+  final boolean isPrimitive;
+  final FieldInfo[] fields;
 
-		Field[] declaredFields = clazz.getDeclaredFields();
-		for (Field f : declaredFields) {
-			if (!Modifier.isStatic(f.getModifiers()))
-				fieldAcc.add(new FieldInfo(f));
-		}
-		if (clazz.getSuperclass() != null)
-			getFields(clazz.getSuperclass(), fieldAcc);
-	}
+  public ClassInfo(Class<?> clazz) {
+    isArray = clazz.isArray();
+    isPrimitive = clazz.isPrimitive() || (isArray && clazz.getComponentType().isPrimitive());
+    fields = getFields(clazz);
+  }
+
+  public static FieldInfo[] getFields(Class<?> clazz) {
+    List<FieldInfo> fields = new ArrayList<FieldInfo>();
+    getFields(clazz, fields);
+    return fields.toArray(new FieldInfo[fields.size()]);
+  }
+
+  private static void getFields(Class<?> clazz, List<FieldInfo> fieldAcc) {
+
+    Field[] declaredFields = clazz.getDeclaredFields();
+    for (Field f : declaredFields) {
+      if (!Modifier.isStatic(f.getModifiers()))
+        fieldAcc.add(new FieldInfo(f));
+    }
+    if (clazz.getSuperclass() != null)
+      getFields(clazz.getSuperclass(), fieldAcc);
+  }
 }
