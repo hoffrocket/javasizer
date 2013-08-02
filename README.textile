@@ -34,10 +34,6 @@ You can either build from scratch using mvn:
 # @mvn package@
 # add @target/javasizer-VERSION.jar@ to your classpath
 
-*OR*
-
-Grab the latest jar from here: "http://github.com/hoffrocket/javasizer/downloads":http://github.com/hoffrocket/javasizer/downloads and add to your classpath
-
 h3. How to use
 
 @org.jh.Sizer.sizeof(root)@  will return the bytes used by the object graph.
