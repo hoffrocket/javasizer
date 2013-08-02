@@ -25,8 +25,10 @@ class ClassInfo {
   final boolean isArray;
   final boolean isPrimitive;
   final FieldInfo[] fields;
+  final Class<?> clazz;
 
   public ClassInfo(Class<?> clazz) {
+    this.clazz = clazz;
     isArray = clazz.isArray();
     isPrimitive = clazz.isPrimitive() || (isArray && clazz.getComponentType().isPrimitive());
     fields = getFields(clazz);
@@ -47,5 +49,11 @@ class ClassInfo {
     }
     if (clazz.getSuperclass() != null)
       getFields(clazz.getSuperclass(), fieldAcc);
+  }
+  
+  @Override
+  public String toString() {
+    return "ClassInfo(" + clazz.getName() + ", isArray: " + isArray 
+        + ", isPrimitive: " + isPrimitive + ", fieldCount: " + fields.length + ")";
   }
 }

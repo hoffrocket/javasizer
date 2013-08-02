@@ -3,10 +3,10 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>javasizer</groupId>
   <artifactId>javasizer</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.2-SNAPSHOT</version>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jaJar>${basedir}/target/${artifactId}-jar-with-dependencies.jar</jaJar>
+    <jaJar>${basedir}/target/${project.artifactId}-jar-with-dependencies.jar</jaJar>
   </properties>
   <build>
     <plugins>
@@ -15,22 +15,26 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.15</version>
         <configuration>
-          <argLine>-javaagent:${jaJar}</argLine>
+          <argLine>-javaagent:${jaJar}
+            -Djava.util.logging.config.file=${basedir}/log.properties</argLine>
           <workingDirectory>${basedir}/target</workingDirectory>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
         <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
+          <source>1.6</source>
+          <target>1.6</target>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.4</version>
         <executions>
           <execution>
             <goals>
@@ -38,7 +42,7 @@
             </goals>
             <phase>compile</phase>
             <configuration>
-              <finalName>${artifactId}</finalName>
+              <finalName>${project.artifactId}</finalName>
               <descriptorRefs>
                 <descriptorRef>jar-with-dependencies</descriptorRef>
               </descriptorRefs>
@@ -51,6 +55,18 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Premain-Class>org.jh.Sizer</Premain-Class>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <profiles>
@@ -61,6 +77,7 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
+            <version>1.2.1</version>
             <executions>
               <execution>
                 <phase>compile</phase>

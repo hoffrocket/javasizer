@@ -16,18 +16,28 @@
 
 package org.jh;
 
+import java.util.logging.Level;
+
+import java.util.logging.Logger;
+
+import java.lang.reflect.Field;
+
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.Map;
+import sun.misc.Unsafe;
 
 public class Sizer {
+  
+  final static Logger LOG = Logger.getLogger(Sizer.class.getName());
 
   static Instrumentation inst;
+  private static Unsafe unsafe;
 
   public static void premain(String options, Instrumentation inst) {
     Sizer.inst = inst;
-    System.out.println("Sizer Agent Configured.");
+    LOG.info("Sizer Agent Configured.");
   }
 
   public static long shallowSize(Object object) {
@@ -44,13 +54,18 @@ public class Sizer {
   }
 
   private static int refSize() {
-    String arch = System.getProperty("os.arch");
-    if (arch == null) {
-      System.err.println("WARNING Sizer: os.arch not set, assuming 64 bit");
-      return 8;
-    } else {
-      System.out.println("Sizer detected architecture: " + arch);
-      return arch.contains("64") ? 8 : 4;
+    try {
+      Field field = Unsafe.class.getDeclaredField("theUnsafe");
+      field.setAccessible(true);
+      unsafe = (Unsafe)field.get(null);
+
+      int arrayIndexScale = unsafe.arrayIndexScale( Object[].class );
+      
+      LOG.info("Sizer detected reference size of: " + arrayIndexScale);
+      
+      return arrayIndexScale;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -64,6 +79,9 @@ public class Sizer {
       Long size = sizeCache.get(clazz);
       if (size == null) {
         size = calculateSize(clazz, info);
+        if (LOG.isLoggable(Level.FINE)){
+          LOG.fine("Got size " + size + " for " + info);
+        }
         sizeCache.put(clazz, size);
       }
       return size;
@@ -72,8 +90,8 @@ public class Sizer {
 
   public static class ReflectionSizeVisitor extends CachingSizeVisitor {
     static int REFERENCE = refSize();
-    static int OBJECT_OVEREHAD = REFERENCE * 2;
-    static int ARRAY = REFERENCE;
+    static int OBJECT_OVERHEAD = 8 + REFERENCE; // 8 bytes of header plus a reference to the Class object
+    static int ARRAY_OVERHEAD = unsafe.arrayBaseOffset(Object[].class);
     static int INT = 4;
     static int LONG = 8;
     static int BYTE = 1;
@@ -123,21 +141,47 @@ public class Sizer {
     }
 
     public boolean visit(ClassInfo info, Object obj) {
+      if (LOG.isLoggable(Level.FINER)){
+        LOG.finer("Looking at " + obj + " info " + info);
+      }
       if (info.isArray) {
-        size += align(OBJECT_OVEREHAD + ARRAY + Array.getLength(obj) * sizeOfType(obj.getClass().getComponentType()));
+        long arraySize = align(ARRAY_OVERHEAD + Array.getLength(obj) * sizeOfType(obj.getClass().getComponentType()));
+        if (LOG.isLoggable(Level.FINER)){
+          LOG.finer("\tcalculated array size: " + arraySize);
+        }
+        size += align(arraySize);
       } else {
         size += shallowSize(obj, info);
       }
-      return true;
+      return !info.isPrimitive;
     }
 
     @Override
     long calculateSize(Object obj, ClassInfo info) {
-      long tSize = OBJECT_OVEREHAD;
-      for (FieldInfo f : info.fields) {
-        tSize += sizeOfType(f.field.getType());
+      if (obj == null) {
+        return 0;
       }
-      return align(tSize);
+
+      long maxOffset = OBJECT_OVERHEAD;
+      long maxOffsetTypeSize = 0;
+      
+      // it turns out that fields in from inherited classes will have oddly aligned offsets
+      // this finds the Field with the maximum offset and assumes that the total size of the instance
+      // is that offset plus the size of that field.
+      for (FieldInfo f : info.fields) {
+        long sizeOfType = sizeOfType(f.field.getType());
+        long offset = unsafe.objectFieldOffset(f.field);
+        
+        if (LOG.isLoggable(Level.FINER)){
+          LOG.finer("\tfield got size " + sizeOfType + " for type " + f.field.getType() + " offset " + offset);
+        }
+        
+        if (offset > maxOffset) {
+          maxOffset = offset;
+          maxOffsetTypeSize = sizeOfType;
+        }
+      }
+      return align(maxOffset + maxOffsetTypeSize);
     }
 
   }
@@ -150,8 +194,12 @@ public class Sizer {
     }
 
     public boolean visit(ClassInfo info, Object obj) {
-      size += Sizer.shallowSize(obj);
-      return true;
+      long shallowSize = Sizer.shallowSize(obj);
+      if (LOG.isLoggable(Level.FINER)){
+        LOG.finer("Instrumentation got shallowSize " + shallowSize + " for " + info);
+      }
+      size += shallowSize;
+      return !info.isPrimitive;
     }
   }
 

@@ -20,6 +20,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.logging.Level;
+
+import org.junit.Before;
+
 import java.util.ArrayList;
 
 import org.junit.Ignore;
@@ -48,9 +52,23 @@ public class SizerTest {
     long expectedSize = Sizer.shallowSize(new Integer[5]) + Sizer.shallowSize(1) * ints.length;
     assertEquals(expectedSize, Sizer.sizeof(ints));
   }
+  
+  static abstract class AnotherBase {}
+  
+  static abstract class AbstractFoo extends AnotherBase {
+    int fooVal = 0;
+  }
+  
+  static class ConcreteFoo extends AbstractFoo {
+    int concreteVal = 0;
+    
+  }
 
   static class SimpleObjectWithField {
     Object o = new Object();
+    short l = 1;
+    short l1 = 2;
+    short l3 = 2;
   }
 
   @Test
@@ -68,6 +86,7 @@ public class SizerTest {
   public void sizeOfObject() {
     assertNoInstSizeIsSane(new Object());
   }
+  
 
   @Test
   public void sizeOfObjectWithField() {
@@ -85,6 +104,12 @@ public class SizerTest {
     char[] hello = {};
     assertNoInstSizeIsSane(hello);
   }
+  
+  @Test
+  public void sizeOfOneIntArray() {
+    int[] hello = {1};
+    assertNoInstSizeIsSane(hello);
+  }
 
   @Test
   public void sizeOfObjectArray() {
@@ -93,7 +118,12 @@ public class SizerTest {
   }
 
   @Test
-  @Ignore("I think this fails because byte boundaries are determined at each level in a class hierarchy")
+  public void sizeOfNullObjectArray() {
+    Object[] hello = new Object[10];
+    assertNoInstSizeIsSane(hello);
+  }
+
+  @Test
   public void sizeOfArrayList() {
     assertNoInstSizeIsSane(new ArrayList<Object>());
   }
@@ -101,5 +131,10 @@ public class SizerTest {
   @Test
   public void sizeOfString() {
     assertNoInstSizeIsSane("hello");
+  }
+  
+  @Test
+  public void inheritence() {
+    assertNoInstSizeIsSane(new ConcreteFoo());
   }
 }
