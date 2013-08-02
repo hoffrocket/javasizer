@@ -4,6 +4,33 @@
   <groupId>javasizer</groupId>
   <artifactId>javasizer</artifactId>
   <version>0.0.2-SNAPSHOT</version>
+  <description>sizeof for java object graphs</description>
+  <url>https://github.com/hoffrocket/javasizer</url>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <connection>scm:git:git@github.com:hoffrocket/javasizer.git</connection>
+    <developerConnection>scm:git:git@github.com:hoffrocket/javasizer.git</developerConnection>
+    <url>git@github.com:hoffrocket/javasizer.git</url>
+  </scm>
+  <developers>
+    <developer>
+      <id>hoffrocket</id>
+      <name>Jon Hoffman</name>
+      <email>jonhoffman@gmail.com</email>
+    </developer>
+  </developers>
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
+  <packaging>jar</packaging>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jaJar>${basedir}/target/${project.artifactId}-jar-with-dependencies.jar</jaJar>

@@ -40,7 +40,12 @@ public class Sizer {
     LOG.info("Sizer Agent Configured.");
   }
 
-  public static long shallowSize(Object object) {
+  /**
+   * For testing
+   * @param object
+   * @return
+   */
+  static long shallowSize(Object object) {
     if (inst == null)
       throw new IllegalStateException("Instrumentation is null");
     if (object == null)
@@ -210,10 +215,7 @@ public class Sizer {
   }
 
   private static SizeVisitor createSizeVisitor() {
-    if (inst == null)
-      return new ReflectionSizeVisitor();
-    else
-      return new InstrumentationSizeVisitor();
+    return new ReflectionSizeVisitor();
   }
 
   public static long sizeof(Object o) {

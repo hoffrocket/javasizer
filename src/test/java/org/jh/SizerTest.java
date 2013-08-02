@@ -47,15 +47,14 @@ public class SizerTest {
   }
 
   @Test
-  public void traverseArray() {
+  public void traverseArrayWithInstrumentation() {
     Integer[] ints = { 1, 2, 3, 4, 5 };
     long expectedSize = Sizer.shallowSize(new Integer[5]) + Sizer.shallowSize(1) * ints.length;
-    assertEquals(expectedSize, Sizer.sizeof(ints));
+    assertEquals(expectedSize, Sizer.sizeof(new Sizer.InstrumentationSizeVisitor(), ints));
   }
   
-  static abstract class AnotherBase {}
   
-  static abstract class AbstractFoo extends AnotherBase {
+  static abstract class AbstractFoo {
     int fooVal = 0;
   }
   
@@ -72,7 +71,7 @@ public class SizerTest {
   }
 
   @Test
-  public void foo() throws ClassNotFoundException {
+  public void nullObjectHasZeroSize() throws ClassNotFoundException {
     assertEquals(0,
         new Sizer.ReflectionSizeVisitor().calculateSize(null, new ClassInfo(Class.forName(("java.lang.Integer")))));
   }

@@ -1,3 +1,5 @@
+"!https://travis-ci.org/hoffrocket/javasizer.png!":https://travis-ci.org/hoffrocket/javasizer
+
 h2. Sizer.sizeof
 
 h3. What is this?
@@ -29,8 +31,8 @@ h3.  How to add to your project
 You can either build from scratch using mvn:
 
 # @git clone git://github.com/hoffrocket/javasizer.git@
-# @mvn compile@
-# add @target/javasizer-jar-with-dependencies.jar@ to your classpath
+# @mvn package@
+# add @target/javasizer-VERSION.jar@ to your classpath
 
 *OR*
 
@@ -39,7 +41,3 @@ Grab the latest jar from here: "http://github.com/hoffrocket/javasizer/downloads
 h3. How to use
 
 @org.jh.Sizer.sizeof(root)@  will return the bytes used by the object graph.
-
-_Note: this probably requires Java 1.5 or higher_
-
-	
