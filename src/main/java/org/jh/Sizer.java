@@ -26,7 +26,6 @@ import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import sun.misc.Unsafe;
 
 public class Sizer {
@@ -238,7 +237,7 @@ public class Sizer {
     return visitor.getSize();
   }
 
-  public static long sizeof(Object o, Set<Object> excludeObjects) {
+  public static long sizeof(Object o, Iterable<Object> excludeObjects) {
     SizeVisitor visitor = createSizeVisitor();
     GraphTraverser traverser = new GraphTraverser(excludeObjects);
     traverser.traverse(visitor, o);

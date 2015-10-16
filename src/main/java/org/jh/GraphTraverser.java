@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class GraphTraverser {
-  public GraphTraverser(Set<Object> objectExcludes) {
+  public GraphTraverser(Iterable<Object> objectExcludes) {
     _visited = new LiteIdentitySet();
     for (Object exclude: objectExcludes) {
       _visited.add(exclude);
