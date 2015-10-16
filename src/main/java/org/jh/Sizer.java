@@ -26,10 +26,11 @@ import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import sun.misc.Unsafe;
 
 public class Sizer {
-  
+
   final static Logger LOG = Logger.getLogger(Sizer.class.getName());
 
   static Instrumentation inst;
@@ -65,9 +66,9 @@ public class Sizer {
       unsafe = (Unsafe)field.get(null);
 
       int arrayIndexScale = unsafe.arrayIndexScale( Object[].class );
-      
+
       LOG.info("Sizer detected reference size of: " + arrayIndexScale);
-      
+
       return arrayIndexScale;
     } catch (Exception e) {
       throw new RuntimeException(e);
@@ -136,7 +137,7 @@ public class Sizer {
     /**
      * align to 8 byte boundaries. Not sure if this is correct behavior on all
      * JVMs
-     * 
+     *
      * @param size
      * @return
      */
@@ -169,18 +170,18 @@ public class Sizer {
 
       long maxOffset = OBJECT_OVERHEAD;
       long maxOffsetTypeSize = 0;
-      
+
       // it turns out that fields in from inherited classes will have oddly aligned offsets
       // this finds the Field with the maximum offset and assumes that the total size of the instance
       // is that offset plus the size of that field.
       for (FieldInfo f : info.fields) {
         long sizeOfType = sizeOfType(f.field.getType());
         long offset = unsafe.objectFieldOffset(f.field);
-        
+
         if (LOG.isLoggable(Level.FINER)){
           LOG.finer("\tfield got size " + sizeOfType + " for type " + f.field.getType() + " offset " + offset);
         }
-        
+
         if (offset > maxOffset) {
           maxOffset = offset;
           maxOffsetTypeSize = sizeOfType;
@@ -234,6 +235,13 @@ public class Sizer {
     traverser.traverse(noop, base);
     SizeVisitor visitor = createSizeVisitor();
     traverser.traverse(visitor, measured);
+    return visitor.getSize();
+  }
+
+  public static long sizeof(Object o, Set<Object> excludeObjects) {
+    SizeVisitor visitor = createSizeVisitor();
+    GraphTraverser traverser = new GraphTraverser(excludeObjects);
+    traverser.traverse(visitor, o);
     return visitor.getSize();
   }
 }

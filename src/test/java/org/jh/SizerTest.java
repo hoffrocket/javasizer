@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import org.junit.Before;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -52,15 +53,15 @@ public class SizerTest {
     long expectedSize = Sizer.shallowSize(new Integer[5]) + Sizer.shallowSize(1) * ints.length;
     assertEquals(expectedSize, Sizer.sizeof(new Sizer.InstrumentationSizeVisitor(), ints));
   }
-  
-  
+
+
   static abstract class AbstractFoo {
     int fooVal = 0;
   }
-  
+
   static class ConcreteFoo extends AbstractFoo {
     int concreteVal = 0;
-    
+
   }
 
   static class SimpleObjectWithField {
@@ -68,6 +69,14 @@ public class SizerTest {
     short l = 1;
     short l1 = 2;
     short l3 = 2;
+  }
+
+  static class SimpleObjectWithSharedField {
+    private Object _shared;
+    short l = 1;
+    public SimpleObjectWithSharedField(Object shared) {
+      _shared = shared;
+    }
   }
 
   @Test
@@ -85,7 +94,7 @@ public class SizerTest {
   public void sizeOfObject() {
     assertNoInstSizeIsSane(new Object());
   }
-  
+
 
   @Test
   public void sizeOfObjectWithField() {
@@ -103,7 +112,7 @@ public class SizerTest {
     char[] hello = {};
     assertNoInstSizeIsSane(hello);
   }
-  
+
   @Test
   public void sizeOfOneIntArray() {
     int[] hello = {1};
@@ -131,9 +140,22 @@ public class SizerTest {
   public void sizeOfString() {
     assertNoInstSizeIsSane("hello");
   }
-  
+
   @Test
   public void inheritence() {
     assertNoInstSizeIsSane(new ConcreteFoo());
+  }
+
+  @Test
+  public void exclude() {
+    int[] shared = new int[1024];
+    SimpleObjectWithSharedField o = new SimpleObjectWithSharedField(shared);
+    long sharedSize = Sizer.sizeof(shared);
+    long wholeSize = Sizer.sizeof(o);
+    long excludedSize = Sizer.sizeof(o, Collections.singleton(shared));
+    assertTrue(
+      "obj w/shared size: " + wholeSize + " shared: " + sharedSize + " obj shared excluded: " + excludedSize,
+      excludedSize < wholeSize
+    );
   }
 }

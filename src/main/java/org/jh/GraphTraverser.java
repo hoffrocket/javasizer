@@ -18,15 +18,27 @@ package org.jh;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class GraphTraverser {
+  public GraphTraverser(Set<Object> objectExcludes) {
+    _visited = new LiteIdentitySet();
+    for (Object exclude: objectExcludes) {
+      _visited.add(exclude);
+    }
+  }
+
+  public GraphTraverser() {
+    this(Collections.<Object>emptySet());
+  }
 
   private final Map<Class<?>, ClassInfo> _classMap = new HashMap<Class<?>, ClassInfo>();
-  private final IdentitySet _visited = new LiteIdentitySet();
+  private final IdentitySet _visited;
 
   private boolean shouldFollow(Object o) {
     return o != null && _visited.add(o);
