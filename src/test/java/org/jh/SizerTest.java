@@ -157,10 +157,17 @@ public class SizerTest {
   }
 
   // test on java 17+
+
   // @Test
-  // public void recordClass() {
-  //   assertNoInstSizeIsSane(new RecordFoo(1, 2, 3));
+  // public void simpleRecord() {
+  //   assertNoInstSizeIsSane(new RecordSimple(1, 2, 3));
   // }
 
-  // public record RecordFoo(int val1, int val2, int val3) {}
+  // @Test
+  // public void complexRecord() {
+  //   assertNoInstSizeIsSane(new RecordComplex(1, "hi", Arrays.asList("a", "b", "c")));
+  // }
+
+  // public record RecordSimple(int val1, int val2, int val3) {}
+  // public record RecordComplex(int val1, String val2, List<String> val3) {}
 }
