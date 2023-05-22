@@ -170,12 +170,23 @@ public class Sizer {
       long maxOffset = OBJECT_OVERHEAD;
       long maxOffsetTypeSize = 0;
 
+      long cumulativeSize = OBJECT_OVERHEAD;
+      boolean isRecord = false;
+
       // it turns out that fields in from inherited classes will have oddly aligned offsets
       // this finds the Field with the maximum offset and assumes that the total size of the instance
       // is that offset plus the size of that field.
       for (FieldInfo f : info.fields) {
         long sizeOfType = sizeOfType(f.field.getType());
-        long offset = unsafe.objectFieldOffset(f.field);
+        cumulativeSize += sizeOfType;
+        long offset = 0;
+        try {
+          offset = unsafe.objectFieldOffset(f.field);
+        } catch (UnsupportedOperationException e) {
+          // this is probably a record class which doesn't support objectFieldOffset
+          // we'll note and just return the cumulative size
+          isRecord = true;
+        }
 
         if (LOG.isLoggable(Level.FINER)){
           LOG.finer("\tfield got size " + sizeOfType + " for type " + f.field.getType() + " offset " + offset);
@@ -186,7 +197,7 @@ public class Sizer {
           maxOffsetTypeSize = sizeOfType;
         }
       }
-      return align(maxOffset + maxOffsetTypeSize);
+      return isRecord ? align(cumulativeSize) : align(maxOffset + maxOffsetTypeSize);
     }
 
   }

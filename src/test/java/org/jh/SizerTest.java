@@ -20,14 +20,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.logging.Level;
-
-import org.junit.Before;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class SizerTest {
@@ -158,4 +155,12 @@ public class SizerTest {
       excludedSize < wholeSize
     );
   }
+
+  // test on java 17+
+  // @Test
+  // public void recordClass() {
+  //   assertNoInstSizeIsSane(new RecordFoo(1, 2, 3));
+  // }
+
+  // public record RecordFoo(int val1, int val2, int val3) {}
 }
