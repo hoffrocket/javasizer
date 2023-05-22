@@ -1,5 +1,3 @@
-![Java Sizer](https://travis-ci.org/hoffrocket/javasizer.png)
-
 ## Sizer.sizeof
 
 ### What is this?
