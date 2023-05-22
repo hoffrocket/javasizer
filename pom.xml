@@ -118,7 +118,10 @@
                 <configuration>
                   <executable>java</executable>
                   <arguments>
-                    <argument>--add-opens java.base/java.lang=ALL-UNNAMED</argument>
+                    <argument>--add-opens</argument>
+                    <argument>java.base/java.lang=ALL-UNNAMED</argument>
+                    <argument>--add-opens</argument>
+                    <argument>java.base/java.util=ALL-UNNAMED</argument>
                     <argument>-classpath</argument>
                     <classpath />
                     <argument>-javaagent:${jaJar}</argument>
